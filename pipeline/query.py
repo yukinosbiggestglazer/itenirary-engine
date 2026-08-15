@@ -14,40 +14,33 @@ poi_queries = {
     "cafe": 'nwr["amenity"="cafe"]["brand:wikidata"](area.searchArea);'
 }
 
-def get_places_pois():
-    n = int(input())
-    city = {}
+def get_query(city, pois): 
+    query = "[out:json][timeout:120];\n\narea\n"
+    query += '["name:en"="' + city + '"]'
+    query += '["boundary"="administrative"]\n->.searchArea;\n\n(\n'
+    for poi in pois:
+        query += poi_queries[poi]
+        query += "\n"
 
-    for i in range(n):
-        c = input()
-        n = int(input())
-        pois = []
-
-        for j in range(n):
-            pois.append(input())
-
-        city[c] = pois
-    return city
+    query += ");\nout center;"
+    return query
 
 
-city = get_places_pois()
 
-def get_queries(): 
-    qr = []
-    for key,value in city.items(): 
-        query = "[out:json][timeout:120];\n\narea\n"
-        query += '["name:en"="' + key + '"]'
-        query += '["boundary"="administrative"]\n->.searchArea;\n\n(\n'
-        for poi in value:
-            query += poi_queries[poi]
-            query += "\n"
 
-        query += ");\nout center;"
-        qr.append(query)
-    return qr
 
-# q = get_queries()
-# print(q[0])
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

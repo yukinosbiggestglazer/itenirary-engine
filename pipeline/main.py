@@ -3,13 +3,24 @@ import pandas as pd
 
 from filter import filter_data
 from fetch import fetch_data
-from query import get_queries
+from query import get_query
 
 if __name__ == "__main__":
-    queries = get_queries()
+    n = int(input("Number of cities: "))
 
-    print(queries[0])
+    for i in range(n):
+        city = input("City: ")
+        m = int(input("Number of POIs: "))
+        pois = []
 
-    for query in queries:
+        for j in range(m):
+            pois.append(input("POI: "))
+
+        query = get_query(city, pois)
+        print(query)
         data = fetch_data(query)
-        filter_data(data)
+
+        if data is not None:
+            filter_data(data)
+
+        # algorith(pois) -> in the future
