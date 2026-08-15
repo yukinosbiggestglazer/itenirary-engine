@@ -29,9 +29,14 @@ pipeline/
 
 Python · OpenStreetMap · Overpass API · FastAPI
 
-Backend Notes
+Backend Notes:
+
 API should accept cities + POI types, not raw Overpass queries.
+
 Keep FastAPI separate from the pipeline logic.
+
 Let the pipeline handle query construction, fetching, and filtering.
+
 Return normalized POI data rather than raw Overpass responses.
+
 Avoid input() once the API is connected.
