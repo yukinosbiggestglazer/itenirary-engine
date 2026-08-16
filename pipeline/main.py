@@ -1,26 +1,17 @@
-import numpy as np
-import pandas as pd
+from pipeline.filter import filter_data
+from pipeline.fetch import fetch_data
+from pipeline.query import get_query
 
-from filter import filter_data
-from fetch import fetch_data
-from query import get_query
 
-if __name__ == "__main__":
-    n = int(input("Number of cities: "))
+def run_pipeline(uinput):
+    city_poi = {}
 
-    for i in range(n):
-        city = input("City: ")
-        m = int(input("Number of POIs: "))
-        pois = []
-
-        for j in range(m):
-            pois.append(input("POI: "))
-
+    for city, pois in uinput.items():
         query = get_query(city, pois)
         print(query)
+
         data = fetch_data(query)
+        city_poi[city] = filter_data(data)
 
-        if data is not None:
-            filter_data(data)
+    return city_poi
 
-        # algorith(pois) -> in the future

@@ -3,3 +3,7 @@ numpy
 geopandas
 matplotlib
 requests
+fastapi
+uvicorn
+python-dotenv
+pydantic

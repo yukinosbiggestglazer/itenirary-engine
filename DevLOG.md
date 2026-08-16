@@ -431,3 +431,189 @@ Also started using conventional commit prefixes such as:
 - Reconsider the `wikidata` / `brand:wikidata` restrictions based on
   the quality and quantity of returned data.
 - Begin the spatial and algorithmic layer once the data pipeline is stable.
+
+
+
+
+
+# DevLog — 16 August 2026
+
+## Backend + Frontend Integration
+
+Today was focused on turning the existing POI pipeline into an actual backend service and connecting it to the frontend.
+
+### 1. FastAPI Backend
+
+Set up the FastAPI backend separately from the pipeline.
+
+Current structure:
+
+backend/
+├── main.py
+├── models.py
+├── routes/
+│   └── pois.py
+└── services/
+    └── poi_formatter.py
+
+The backend is responsible for exposing the pipeline through API endpoints rather than containing the pipeline logic itself.
+
+The `/pois` endpoint accepts city names and their selected POI categories.
+
+### 2. Pydantic Models
+
+Added Pydantic models to define the structure of requests received by the backend.
+
+The API expects cities and their individual POI selections rather than raw Overpass queries.
+
+Example:
+
+{
+    "cities": {
+        "Tokyo": ["park", "mall"],
+        "Kyoto": ["aquarium"],
+        "Chiba": ["park", "zoo"]
+    }
+}
+
+This keeps the API interface structured and prevents the frontend from needing to know anything about Overpass query syntax.
+
+### 3. Backend Architecture
+
+Separated the responsibilities between routes, services, and the pipeline.
+
+The flow is now:
+
+Frontend
+    ↓
+POST /pois
+    ↓
+routes/pois.py
+    ↓
+services/poi_formatter.py
+    ↓
+pipeline/main.py
+    ↓
+query.py → fetch.py → filter.py
+    ↓
+Overpass API
+
+The route handles the HTTP request, while the service layer handles the interaction with the pipeline and conversion of its output into a frontend-friendly format.
+
+### 4. Overpass API
+
+Ran into HTTP 429 and 504 errors with the public Overpass instance while testing multiple cities.
+
+Switched to the Mail.ru Overpass instance:
+
+https://maps.mail.ru/osm/tools/overpass/api/interpreter
+
+This performed significantly better for the current workload.
+
+A query that was repeatedly hitting limits on the public instance completed in roughly four seconds on the Mail.ru instance.
+
+### 5. Pipeline
+
+The pipeline itself remains separate from the backend.
+
+`pipeline/main.py` takes the city/POI configuration, generates an Overpass query, fetches the data, and filters the returned elements.
+
+`filter.py` continues to return categorized raw OSM elements such as:
+
+{
+    "park": [...],
+    "mall": [...],
+    "zoo": [...]
+}
+
+The pipeline does not need to know anything about the frontend.
+
+### 6. POI Formatting
+
+Added `poi_formatter.py` to convert raw pipeline output into normalized API data.
+
+Raw pipeline output:
+
+{
+    "Chiba": {
+        "mall": [...],
+        "zoo": [...]
+    }
+}
+
+is converted into:
+
+{
+    "cities": [
+        {
+            "name": "Chiba",
+            "pois": [
+                {
+                    "id": "...",
+                    "name": "...",
+                    "category": "mall",
+                    "lat": 35.64,
+                    "lon": 140.04
+                }
+            ]
+        }
+    ]
+}
+
+This means the frontend does not need to understand the structure of raw Overpass responses.
+
+### 7. Frontend Integration
+
+Connected the existing React frontend to the real FastAPI backend.
+
+The frontend now sends:
+
+POST /pois
+
+instead of relying on mock POI data.
+
+Had to configure CORS because the Vite frontend and FastAPI backend run on different ports during development.
+
+After adding CORS middleware, the browser's preflight request succeeded and the actual POST request returned `200 OK`.
+
+### 8. End-to-End Test
+
+Successfully ran the complete system:
+
+Frontend → FastAPI → POI service → Pipeline → Overpass → Pipeline filtering → POI formatting → Frontend.
+
+The frontend successfully received and displayed hundreds of real OSM POIs.
+
+One test returned approximately 390 POIs.
+
+## Current Status
+
+The basic POI discovery system is now functional end-to-end.
+
+Completed:
+
+- Dynamic multi-city input
+- Per-city POI selection
+- Dynamic Overpass query generation
+- Overpass data fetching
+- POI categorization
+- FastAPI backend
+- Pydantic request validation
+- Backend route/service separation
+- POI response normalization
+- CORS configuration
+- Frontend ↔ backend integration
+- Real OSM POI data displayed in the frontend
+
+## Next Steps
+
+The next major stage is moving beyond simple POI discovery.
+
+Potential next steps:
+
+1. Clean up and harden the API.
+2. Improve POI filtering and normalization.
+3. Add spatial processing / POI density calculations.
+4. Build the itinerary generation logic.
+5. Add routing and distance calculations.
+6. Develop the recommendation/scoring system.

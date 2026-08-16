@@ -1,0 +1,102 @@
+@import url('https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@500;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-ink text-fg font-sans antialiased;
+    background-image: radial-gradient(circle at 12% 8%, rgba(212, 168, 87, 0.05), transparent 45%),
+      radial-gradient(circle at 88% 92%, rgba(79, 163, 161, 0.05), transparent 45%);
+    background-attachment: fixed;
+  }
+
+  * {
+    @apply border-line;
+  }
+
+  :focus-visible {
+    outline: 2px solid #d4a857;
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgba(212, 168, 87, 0.28);
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #2a3450 transparent;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #2a3450;
+    border-radius: 999px;
+  }
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+}
+
+/* Leaflet dark-theme integration */
+.leaflet-container {
+  background: #0a0e17;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+.leaflet-control-zoom a {
+  background-color: #171f33 !important;
+  color: #e9edf6 !important;
+  border-color: #232c40 !important;
+}
+.leaflet-control-zoom a:hover {
+  background-color: #1e2740 !important;
+}
+
+.leaflet-control-attribution {
+  background: rgba(10, 14, 23, 0.75) !important;
+  color: #59627a !important;
+}
+.leaflet-control-attribution a {
+  color: #8d97ae !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #171f33;
+  color: #e9edf6;
+  border: 1px solid #232c40;
+  border-radius: 10px;
+  box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.6);
+}
+.leaflet-popup-tip {
+  background: #171f33;
+  border: 1px solid #232c40;
+}
+.leaflet-popup-content {
+  margin: 12px 14px;
+  font-family: 'Inter', system-ui, sans-serif;
+}
+.leaflet-popup-close-button {
+  color: #8d97ae !important;
+}
+
+.marker-pin {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  border: 2px solid #0a0e17;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.12);
+}
