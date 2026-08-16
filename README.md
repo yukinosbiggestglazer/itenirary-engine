@@ -94,7 +94,7 @@ Accepts multiple cities, each with its own POI categories.
 
 Example request:
 
-```
+
 {
   "cities": {
     "Tokyo": ["park", "mall"],
@@ -102,7 +102,7 @@ Example request:
     "Chiba": ["park", "zoo"]
   }
 }
-```
+
 
 The backend runs the pipeline for each city and returns normalized POI data.
 
